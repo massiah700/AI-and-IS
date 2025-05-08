@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Diffie-Hellman Key Exchange</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      color: #333;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #1d4ed8;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      margin: auto;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="number"] {
+      padding: 8px;
+      margin: 10px;
+      width: 80px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #1e40af;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 5px;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Diffie-Hellman Key Exchange</h1>
+
+    <p>Enter Prime (p): <input type="number" id="prime" value="23"></p>
+    <p>Enter Primitive Root (g): <input type="number" id="base" value="5"></p>
+    <p>Alice's Private Key (a): <input type="number" id="alicePrivate" value="6"></p>
+
+    <button onclick="exchangeKeys()">Exchange Keys</button>
+
+    <div class="output" id="result"></div>
+  </div>
+
+  <script>
+    function modPow(base, exponent, modulus) {
+      let result = 1;
+      base = base % modulus;
+      while (exponent > 0) {
+        if (exponent % 2 === 1)
+          result = (result * base) % modulus;
+        exponent = Math.floor(exponent / 2);
+        base = (base * base) % modulus;
+      }
+      return result;
+    }
+
+    function exchangeKeys() {
+      const p = parseInt(document.getElementById("prime").value);
+      const g = parseInt(document.getElementById("base").value);
+      const a = parseInt(document.getElementById("alicePrivate").value);
+
+      const b = Math.floor(Math.random() * (p - 2)) + 2;
+
+      const A = modPow(g, a, p);
+      const B = modPow(g, b, p);
+
+      const sAlice = modPow(B, a, p);
+      const sBob = modPow(A, b, p);
+
+      const result = `
+Public Prime (p): ${p}
+Primitive Root (g): ${g}
+
+Alice's Private Key (a): ${a}
+Bob's Private Key (b): ${b}
+
+Alice's Public Key (A): ${A}
+Bob's Public Key (B): ${B}
+
+🔐 Shared Secret Key Computed by Alice: ${sAlice}
+🔐 Shared Secret Key Computed by Bob:   ${sBob}
+      `;
+
+      document.getElementById("result").innerText = result;
+    }
+  </script>
+</body>
+</html>
